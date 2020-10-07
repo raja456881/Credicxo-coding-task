@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,BaseUserManager
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import Group
 from django.db import transaction
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password=None,):
@@ -36,6 +37,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_student=models.BooleanField(default=False)
     is_admin=models.BooleanField(default=False)
     is_teaches=models.BooleanField(default=False)
+    groups =models.ManyToManyField(Group,
+                             related_name="%(class)ss",
+                             related_query_name="%(class)s",
+                             blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -54,8 +59,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Student(User, PermissionsMixin):
-
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
@@ -68,12 +71,7 @@ class Teaches(User, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
-    @transaction.atomic
-    def save(self):
-        user = super().save(commit=False)
-        user.is_student = True
-        user.save()
-        return user
+
 
 
 

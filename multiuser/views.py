@@ -4,7 +4,10 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from.models import Student
+
 from.models import User
+from django.contrib.auth.models import Group
 from .searilizers import StudentRegistrationSerializer,\
     Restpasswordsearilizers, AdminRegistrationSerializer,\
     TeachesRegistrationSerializer, UserLoginSerializer,setnewpasswordsearilizers
@@ -32,7 +35,6 @@ class AdminRegistration(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class TeachesRegistration(APIView):

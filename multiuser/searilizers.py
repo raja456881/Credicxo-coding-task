@@ -5,6 +5,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_bytes,smart_str, force_str,smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from.models import User
+from django.contrib.auth.models import Group
 from rest_framework.exceptions import AuthenticationFailed
 class StudentRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -14,14 +15,15 @@ class StudentRegistrationSerializer(serializers.ModelSerializer):
     )
     username=serializers.CharField(max_length=34)
     token = serializers.CharField(max_length=255, read_only=True)
-
+    groups=serializers.CharField(max_length=33, read_only=True)
     class Meta:
         model = Student
-        fields =  ['email', 'username', 'password', 'token']
-
-
+        fields =  ['email', 'username', 'password', 'token','groups']
     def create(self, validated_data):
-        return Student.objects.create_user(**validated_data)
+        user=Student.objects.create_user(**validated_data)
+        group=Group.objects.get(name="Student")
+        user.groups.add(group)
+        return user
 
 class TeachesRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -30,13 +32,17 @@ class TeachesRegistrationSerializer(serializers.ModelSerializer):
         write_only=True
     )
     token = serializers.CharField(max_length=255, read_only=True)
-
+    groups=serializers.CharField(max_length=33, read_only=True)
     class Meta:
         model = Teaches
-        fields =  ['email', 'username', 'password', 'token']
+        fields =  ['email', 'username', 'password', 'token', 'groups']
 
     def create(self, validated_data):
-        return Teaches.objects.create_user(**validated_data)
+        user= Teaches.objects.create_user(**validated_data)
+        group=Group.objects.get(name="Teaches")
+        user.groups.add(group)
+        return user
+
 class AdminRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=128,
@@ -45,15 +51,18 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
     )
     username=serializers.CharField(max_length=34)
     token = serializers.CharField(max_length=255, read_only=True)
+    groups=serializers.CharField(max_length=33, read_only=True)
 
     class Meta:
         model = Admin
-        fields = ['email', 'username', 'password', 'token']
+        fields = ['email', 'username', 'password', 'token', 'groups']
 
 
     def create(self, validated_data):
-
-        return Admin.objects.create_user(**validated_data)
+        user=Admin.objects.create_user(**validated_data)
+        group=Group.objects.get(name="Admin")
+        user.groups.add(group)
+        return user
 
 
 
