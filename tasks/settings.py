@@ -145,7 +145,7 @@ EMAIL_HOST_PASSWORD='trbjviixvlmrhkpd'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'multiuser.backends.JWTStudentAuthentication',
-        'multiuser.backends.JWTTeachesAuthentication',
+        'multiuser.backends.JWTTeacherAuthentication',
         'multiuser.backends.JWTAdminAuthentication'
     )
 }

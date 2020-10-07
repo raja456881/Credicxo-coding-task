@@ -1,16 +1,21 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
+from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from.models import Student
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser
+from rest_framework.decorators import api_view
+from django.shortcuts import HttpResponse
+from django.http import JsonResponse
 from.models import User
 from django.contrib.auth.models import Group
 from .searilizers import StudentRegistrationSerializer,\
     Restpasswordsearilizers, AdminRegistrationSerializer,\
-    TeachesRegistrationSerializer, UserLoginSerializer,setnewpasswordsearilizers
+    TeachesRegistrationSerializer, UserLoginSerializer,setnewpasswordsearilizers,studentdetailserializers,adminviewsearilizers
 from django.utils.encoding import smart_bytes,smart_str, force_str,smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from .utils import utils
@@ -56,7 +61,6 @@ class UserLogin(APIView):
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
 class Resetpasswordview(GenericAPIView):
     serializer_class = Restpasswordsearilizers
 
@@ -101,4 +105,34 @@ class setnewpassword(GenericAPIView):
         serializer=self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'success':True, "messages":"Password reset success"},status=status.HTTP_200_OK)
+
+class teacherview(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Student.objects.all()
+    serializer_class = studentdetailserializers
+
+
+class Adminview(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    queryset = User.objects.all()
+    serializer_class = adminviewsearilizers
+
+
+
+
+def studenview(request):
+    if User.is_authenticated and User.is_student:
+        user=User.objects.get(username=request.user.username)
+        data={
+            "name":user.username,
+            "email":user.email,
+            'id':user.id
+        }
+    return JsonResponse({'data':data})
+
+
+
+
+
+
 

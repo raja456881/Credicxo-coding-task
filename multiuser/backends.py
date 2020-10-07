@@ -1,7 +1,7 @@
 import jwt
 from django.conf import settings
 from rest_framework import authentication, exceptions
-from .models import Student, Teaches, Admin
+from .models import Student, Teacher, Admin
 
 class JWTStudentAuthentication(authentication.BaseAuthentication):
     authentication_header_prefix = 'Token'
@@ -42,7 +42,7 @@ class JWTStudentAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed(msg)
         return (user, token)
 
-class JWTTeachesAuthentication(authentication.BaseAuthentication):
+class JWTTeacherAuthentication(authentication.BaseAuthentication):
     authentication_header_prefix = 'Token'
 
     def authenticate(self, request):
@@ -73,8 +73,8 @@ class JWTTeachesAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed(msg)
 
         try:
-            user = Teaches.objects.get(pk=payload['id'])
-        except Teaches.DoesNotExist:
+            user = Teacher.objects.get(pk=payload['id'])
+        except Teacher.DoesNotExist:
             msg = 'No user matching this token was found.'
             raise exceptions.AuthenticationFailed(msg)
             return

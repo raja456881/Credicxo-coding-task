@@ -10,7 +10,40 @@ class UserManager(BaseUserManager):
         if email is None:
             raise TypeError("Users should have a email")
         user=self.model(username=username, email=self.normalize_email(email))
+
         user.set_password(password)
+        user.save()
+        return user
+    def create_student(self, username, email, password=None,):
+        if username is None:
+            raise TypeError('Users should have a username')
+        if email is None:
+            raise TypeError("Users should have a email")
+        user=self.model(username=username, email=self.normalize_email(email))
+        user.is_student=True
+        user.set_password(password)
+        user.save()
+        return user
+    def create_admin(self, username, email, password=None,):
+        if username is None:
+            raise TypeError('Users should have a username')
+        if email is None:
+            raise TypeError("Users should have a email")
+        user=self.model(username=username, email=self.normalize_email(email))
+        user.is_admin=True
+        user.is_staff=True
+        user.set_password(password)
+        user.save()
+        return user
+    def create_teacher(self, username, email, password=None,):
+        if username is None:
+            raise TypeError('Users should have a username')
+        if email is None:
+            raise TypeError("Users should have a email")
+        user=self.model(username=username, email=self.normalize_email(email))
+
+        user.set_password(password)
+        user.is_teacher=True
         user.save()
         return user
 
@@ -36,7 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateTimeField(auto_now=True)
     is_student=models.BooleanField(default=False)
     is_admin=models.BooleanField(default=False)
-    is_teaches=models.BooleanField(default=False)
+    is_teacher=models.BooleanField(default=False)
     groups =models.ManyToManyField(Group,
                              related_name="%(class)ss",
                              related_query_name="%(class)s",
@@ -66,7 +99,7 @@ class Student(User, PermissionsMixin):
 
 
 
-class Teaches(User, PermissionsMixin):
+class Teacher(User, PermissionsMixin):
 
 
     USERNAME_FIELD = 'email'
