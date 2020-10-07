@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'multiuser',
-    'rest_framework'
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -93,7 +93,10 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'multiuser.User'
 
+
+# Add two new backends under default authentication
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -132,3 +135,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_USE_TLS=True
+EMAIL_PORT=587
+EMAIL_HOST_USER='rajasaini12345641@gmail.com'
+EMAIL_HOST_PASSWORD='trbjviixvlmrhkpd'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'multiuser.backends.JWTStudentAuthentication',
+        'multiuser.backends.JWTTeachesAuthentication',
+        'multiuser.backends.JWTAdminAuthentication'
+    )
+}
